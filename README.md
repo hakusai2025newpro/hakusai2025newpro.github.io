@@ -1,0 +1,1 @@
+# hakusai2025newpro.github.io

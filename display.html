@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>混雑状況表示</title>
+  <style>
+    body { font-family: sans-serif; }
+    .room { margin: 10px; padding: 10px; border: 1px solid #ccc; width: 200px; display: inline-block; text-align: center; border-radius: 8px; }
+    .low { background-color: #a8d5ff; }
+    .mid { background-color: #ffff99; }
+    .high { background-color: #ff9999; }
+  </style>
+</head>
+<body>
+  <h1>混雑状況一覧</h1>
+  <div id="rooms"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCllp_VzVYJi9VK_tnBSI2_Qlg2db_kWXI",
+  authDomain: "culature-fes-2025.firebaseapp.com",
+  databaseURL: "https://culature-fes-2025-default-rtdb.firebaseio.com",
+  projectId: "culature-fes-2025",
+  storageBucket: "culature-fes-2025.firebasestorage.app",
+  messagingSenderId: "651366367863",
+  appId: "1:651366367863:web:a0d8762116ee51b5753c72"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const roomContainer = document.getElementById("rooms");
+
+    function getLevelClass(count) {
+      if (count <= 5) return "low";
+      if (count <= 15) return "mid";
+      return "high";
+    }
+
+    const roomsRef = ref(db, "rooms");
+    onValue(roomsRef, (snapshot) => {
+      const data = snapshot.val();
+      roomContainer.innerHTML = "";
+      for (const [roomId, info] of Object.entries(data)) {
+        const div = document.createElement("div");
+        div.className = "room " + getLevelClass(info.count);
+        div.innerHTML = `<h3>${roomId}</h3><p>${info.count}人</p>`;
+        roomContainer.appendChild(div);
+      }
+    });
+  </script>
+</body>
+</html>
